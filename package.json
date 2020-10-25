@@ -1,0 +1,22 @@
+{
+  "name": "jumpgame-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "parcel index.html",
+    "watch": "parcel watch index.html main.js",
+    "build": "parcel build index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "matter-js": "^0.14.2",
+    "pixi.js": "^5.3.3"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  }
+}
