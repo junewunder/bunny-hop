@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import {
     Body,
     Bodies,
@@ -31,6 +32,12 @@ document.addEventListener('keyup', (e) => {
     if (e.keyCode === 32) holdingSpace = false
 });
 
+const spaceDebug = (...args) => {
+    if (holdingSpace) {
+        console.log(...args)
+    }
+}
+
 let NUM_JUMPS = 2
 let NUM_DASHES = 1
 let SPRITE_TICK_COOLDOWN = 10
@@ -40,7 +47,7 @@ let HEIGHT_WALK = 40
 // sprites
 // walk, wallgrab, dash
 
-export function makeCharacter ({engine, x, y}) {
+export function makeCharacter ({engine, pixi, x, y}) {
     let spriteTickCooldown = 0
     const body = Bodies.rectangle(x, y, WIDTH_WALK, HEIGHT_WALK, {
         isStatic: false,
@@ -120,15 +127,11 @@ export function makeCharacter ({engine, x, y}) {
 
     Events.on(engine, 'beforeUpdate', e => {
         const collisions = Query.collides(body, Composite.allBodies(engine.world))
-
         let shouldWallgrab = false
         let wallToGrab = null
-        // if (holdingSpace) console.log('logging collisions');
         for (let collision of collisions) {
-            if (collision.bodyB.id === body.id) { continue }
-            // if (holdingSpace) {
-            //     console.log(collision);
-            // }
+            if (collision.bodyA.id === body.id
+                && collision.bodyB.id === body.id) { continue }
             if (collision.axisNumber === 1) {
                 shouldWallgrab = true
                 wallToGrab = collision.bodyB
@@ -152,6 +155,21 @@ export function makeCharacter ({engine, x, y}) {
     })
 
     World.add(engine.world, [ body ])
+
+    // RENDERING
+    const graphics = new PIXI.Graphics();
+    pixi.stage.addChild(graphics);
+    pixi.ticker.add(() => {
+        graphics.clear()
+        graphics.beginFill(0xDE3249);
+        graphics.drawRect(
+            body.bounds.min.x,
+            body.bounds.min.y,
+            body.bounds.max.x - body.bounds.min.x,
+            body.bounds.max.y - body.bounds.min.y
+        );
+        graphics.endFill();
+    })
 
     return {
         body,

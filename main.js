@@ -52,7 +52,7 @@ Main.init = function () {
     });
 
     const floor = Bodies.rectangle(WIDTH / 2, HEIGHT, WIDTH, 50, { isStatic: true })
-    // const platformGenerator = makePlatformGenerator({ floor, engine, WIDTH })
+    const platformGenerator = makePlatformGenerator({ floor, engine, WIDTH })
 
     World.add(world, [
         // walls
@@ -77,25 +77,25 @@ Main.init = function () {
     // World.add(world, mouseConstraint);
 
     // keep the mouse in sync with rendering
-    render.mouse = mouse;
+    // render.mouse = mouse;
 
     // fit the render viewport to the scene
-    Render.lookAt(render, {
-        min: { x: 0, y: 0 },
-        max: { x: WIDTH, y: HEIGHT }
-    });
+    // Render.lookAt(render, {
+    //     min: { x: 0, y: 0 },
+    //     max: { x: WIDTH, y: HEIGHT }
+    // });
 
     // context for MatterTools.Demo
     return {
         engine: engine,
         runner: runner,
-        render: render,
+        // render: render,
         canvas: render.canvas,
         stop: function () {
-            Matter.Render.stop(render);
+            // Matter.Render.stop(render);
             Matter.Runner.stop(runner);
         }
-    };
+    }
 };
 
 Main.init()
