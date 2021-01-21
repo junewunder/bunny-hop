@@ -20,8 +20,14 @@ export function makePlatform({engine, pixi, x, y, isVertical}) {
 
     const onBeforeUpdate = e => {
         Body.setAngularVelocity(body, 0)
+        Body.setVelocity(body, { x: 0, y: body.velocity.y })
+        Body.setPosition(body, { x: 0, y: body.velocity.y })
+    }
+    const onAfterUpdate = e => {
+        Body.setVelocity(body, { x: 0, y: body.velocity.y })
     }
     Events.on(engine, 'beforeUpdate', onBeforeUpdate)
+    Events.on(engine, 'afterUpdate', onAfterUpdate)
     
     const graphics = new PIXI.Graphics();
     pixi.stage.addChild(graphics);

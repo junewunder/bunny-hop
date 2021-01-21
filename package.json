@@ -17,6 +17,6 @@
     "pixi.js": "^5.3.3"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.4"
+    "parcel-bundler": "^1.3.1"
   }
 }

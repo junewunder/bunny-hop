@@ -52,9 +52,10 @@ export function makeCharacter ({engine, pixi, x, y}) {
     const body = Bodies.rectangle(x, y, WIDTH_WALK, HEIGHT_WALK, {
         isStatic: false,
         mass: 0,
-        frictionAir: 0.01,
+        frictionAir: 0.09,
         friction: 1,
         label: 'Character',
+        density: 0.01
     })
 
     let currentSprite = 'walk'
