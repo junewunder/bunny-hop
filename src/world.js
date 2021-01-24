@@ -8,6 +8,7 @@ import Rect from './blah/rect'
 import Vec from './blah/vec'
 import Sign from './entities/sign'
 import Coin from './entities/coin'
+import CoinBig from './entities/coinbig'
 import Death from './entities/death'
 
 import level from '../assets/bunnyhop/levellong.level.json'
@@ -117,6 +118,13 @@ export default class World {
           break;
         
         case 'coinBig':
+          let coinbig = new CoinBig(this, new Vec(x, y), () => {
+            this.entities.delete(coinbig)
+            coinbig.destroy(this.stage)
+          })
+          this.entities.add(coinbig)
+          break;
+
         case 'coin': 
           let coin = new Coin(this, new Vec(x, y), () => {
             this.entities.delete(coin)

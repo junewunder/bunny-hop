@@ -26,6 +26,7 @@ app.loader
   .add('signs', 'bunnyhop/signs.json')
   .add('death', 'bunnyhop/death.json')
   .add('coin', 'bunnyhop/coin.json')
+  .add('coinbig', 'bunnyhop/coinbig.json')
   .load(onAssetsLoaded);
 
 function onAssetsLoaded ({resources}) {  

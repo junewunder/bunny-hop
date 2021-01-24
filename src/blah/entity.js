@@ -47,7 +47,7 @@ export default class Entity {
     this.sprite.y = this.y * this.world.scale
 
     // this.facing = (this.vx >= 1 || this.vx <= -1) ? vxSign : this.facing
-    if (this.facing !== vxSign && vxSign !== 0) {
+    if (this.facing !== vxSign && vxSign !== 0 && !(this.vx < 1 && this.vx > -1) ) {
       this.facing = vxSign
       this.sprite.scale.x = this.world.scale * this.facing
       if (this.facing === 1) {

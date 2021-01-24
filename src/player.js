@@ -22,9 +22,10 @@ export default class Player extends Entity {
     super({
       world,
       // spriteName: 'happie',
-      spriteName: 'turtle',
-      // spriteName: 'bunnysprite',
-      // frames: 8,
+      // spriteName: 'turtle',
+      // frames:16,
+      spriteName: 'bunnysprite',
+      frames: 8,
       pos: new Vec(100, 100),
       tags: ['player']
     })
