@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js'
+import { Camera, PanTo } from 'pixi-game-camera'
 import Collider from './blah/collider'
 import Room from './room'
 import Entity from './blah/entity'
@@ -6,71 +7,71 @@ import Player from './player'
 import Rect from './blah/rect'
 import Vec from './blah/vec'
 import Sign from './entities/sign'
+import Coin from './entities/coin'
 import Death from './entities/death'
 
-import level from '../assets/bunnyhop/levelbox.level.json'
+import level from '../assets/bunnyhop/levellong.level.json'
 
 export default class World {
-  scale = 3 // 1 in game unit * scale = on screen pixels
+  scale = 2 // 1 in game unit * scale = on screen pixels
   stage
+  camera
   pixi
   player
-  entities
+  entities = new Set()
   room
 
   currentRoom = 0
   maxRoom = 2
 
-  // shouldReset
+  framesSincePanY = 0
+  framesBetweenPanY = 10
 
   constructor(pixi) {
     this.pixi = pixi
+    this.camera = new Camera({ticker: pixi.ticker})
     this.stage = new PIXI.Container()
     this.pixi.stage.addChild(this.stage)
     this.room = new Room(this.stage, this, level[this.currentRoom])
+    this.createEntities(level[this.currentRoom].entities)
     
-    this.player = new Player(this)
+    // this.exitLeft = new Sign(this,
+    //   new Vec(0, 16 * 13), 
+    //   'exitLeft', 
+    //   [], 'player', 
+    //   () => this.prevRoom())
     
-    this.exitLeft = new Sign(this,
-      new Vec(0, 16 * 13), 
-      'exitLeft', 
-      [], 'player', 
-      () => this.prevRoom())
-    
-    this.exitRight = new Sign(this,
-      new Vec(16 * 27, 16 * 13), 
-      'exitRight', 
-      [], 'player',
-      () => this.nextRoom())
+    // this.exitRight = new Sign(this,
+    //   new Vec(16 * 27, 16 * 13), 
+    //   'exitRight', 
+    //   [], 'player',
+    //   () => this.nextRoom())
 
-    this.death = new Death(this, 
-      new Vec(0, 16 * 15.5), 
-      () => console.log('dead!')
-    )
+    // this.death = new Death(this, 
+    //   new Vec(0, 16 * 15.5), 
+    //   () => console.log('dead!')
+    // )
   }
 
   colliders(tag) {
-    return [this.player.collider, this.room.collider]
-      .filter(x => x.tags.includes?.(tag))
+    return [this.player.collider, this.room.collider].concat(Array.from(this.entities))
+      .filter(x => x.tags?.includes?.(tag))
   }
 
   update() {
-    this.player.update()
-    this.exitLeft.update()
-    this.exitRight.update()
-    this.death.update()
+    const { player, pixi, stage, scale } = this
+
+    player.update()
+    for (let entity of this.entities) {
+      entity.update()
+    }
 
     // camera attempt
-    // console.log(this.player.sprite.x)
-    // console.log(this.stage.x)
-    // this.stage.x = 
-    //   // Math.max(
-    //     // 0, 
-    //     this.player.x * this.scale - this.pixi.stage.width / 2
-    //   // )
-    // // this.stage.y = this.player.y * this.scale - this.pixi.stage.height / 2
-
-    const { player }  = this
+    stage.x = 
+      Math.min(0, Math.max(-pixi.stage.width - 3 * 16 * scale + window.innerWidth,
+        -(player.x * scale - window.innerWidth / 2)
+      ))
+    
 
     player.vy += .5
     if (player.onGround) {
@@ -110,5 +111,46 @@ export default class World {
     this.currentRoom--
     this.room = new Room(this.stage, this, level[this.currentRoom])
     this.resetPlayer(false)
+  }
+
+  createEntities(entities) {
+    for (let pos in entities) {
+      let _, [x, y] = pos.split(',').map(x => parseInt(x))
+      console.log(x, y)
+      switch (entities[pos]) {
+        case 'player': 
+          this.player = new Player(this)
+          this.player.x = x
+          this.player.y = y
+          break;
+        
+        case 'coinBig':
+        case 'coin': 
+          let coin = new Coin(this, new Vec(x, y), () => {
+            this.entities.delete(coin)
+            coin.destroy(this.stage)
+          })
+          this.entities.add(coin)
+          break;
+
+        case 'signLeft':
+          this.entities.add(
+            new Sign(this, new Vec(x, y), 'exitLeft', [], 'player', () => this.prevRoom())
+          )
+          break;
+        
+        case 'signRight':
+          this.entities.add(
+            new Sign(this, new Vec(x, y), 'exitRight', [], 'player', () => this.nextRoom())
+          )
+          break;
+        
+        case 'signEmpty':
+          this.entities.add(
+            new Sign(this, new Vec(x, y), 'empty', [], 'player', () => null)
+          )
+          break;
+      }
+    }
   }
 }

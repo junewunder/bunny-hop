@@ -16,6 +16,7 @@
   "dependencies": {
     "aseprite": "^0.3.0",
     "matter-js": "^0.14.2",
+    "pixi-game-camera": "^1.0.0",
     "pixi.js": "^5.3.3"
   },
   "devDependencies": {

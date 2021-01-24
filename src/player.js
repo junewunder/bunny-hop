@@ -15,6 +15,9 @@ export default class Player extends Entity {
   framesSinceJump = 0
   JUMP_QUEUE_LENGTH = 30
 
+  framesSinceOnGround = 0
+  JUMP_FORGIVENESS = 15
+
   constructor(world) {
     super({
       world,
@@ -35,6 +38,9 @@ export default class Player extends Entity {
     this.onGround = this.collider.check(new Vec(0, 1), 'solid')
     const { onGround, holdingLeft, holdingRight, holdingSpace, jumpQueued, framesSinceJump } = this
 
+    if (onGround) this.framesSinceOnGround = 0
+    else this.framesSinceOnGround++
+
     if (holdingRight && !holdingLeft) {
       if (onGround) this.vy -= 3
       this.vx += onGround ? 2 : 1
@@ -44,8 +50,9 @@ export default class Player extends Entity {
       this.vx += onGround ? -2 : -1
     }
     if (
-      (holdingSpace || (jumpQueued && framesSinceJump < this.JUMP_QUEUE_LENGTH)) 
-      && onGround) {
+      ((holdingSpace || (jumpQueued && framesSinceJump < this.JUMP_QUEUE_LENGTH)) 
+      && onGround)
+      || (holdingSpace && this.framesSinceOnGround <= this.JUMP_FORGIVENESS)) {
       this.jumpQueued = false
       this.vy = -7
     }
