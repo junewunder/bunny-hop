@@ -8,27 +8,26 @@ import Vec from './blah/vec'
 import Sign from './entities/sign'
 import Death from './entities/death'
 
+import level from '../assets/bunnyhop/levelbox.level.json'
+
 export default class World {
   scale = 3 // 1 in game unit * scale = on screen pixels
   stage
   pixi
-  resources
   player
   entities
   room
 
-  mapName = 'levelbox'
   currentRoom = 0
   maxRoom = 2
 
   // shouldReset
 
-  constructor(pixi, resources) {
+  constructor(pixi) {
     this.pixi = pixi
     this.stage = new PIXI.Container()
     this.pixi.stage.addChild(this.stage)
-    this.resources = resources
-    this.room = new Room(this.stage, this, this.mapName, this.currentRoom, resources)
+    this.room = new Room(this.stage, this, level[this.currentRoom])
     
     this.player = new Player(this)
     
@@ -100,7 +99,8 @@ export default class World {
     if (this.currentRoom + 1 > this.maxRoom) { return }
     this.room.destroy(this.stage)
     this.currentRoom++
-    this.room = new Room(this.stage, this, this.mapName, this.currentRoom, this.resources)
+    console.log(this.currentRoom)
+    this.room = new Room(this.stage, this, level[this.currentRoom])
     this.resetPlayer(true)
   }
 
@@ -108,7 +108,7 @@ export default class World {
     if (this.currentRoom - 1 < 0) { return }
     this.room.destroy(this.stage)
     this.currentRoom--
-    this.room = new Room(this.stage, this, this.mapName, this.currentRoom, this.resources)
+    this.room = new Room(this.stage, this, level[this.currentRoom])
     this.resetPlayer(false)
   }
 }

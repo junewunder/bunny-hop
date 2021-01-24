@@ -18,8 +18,6 @@ export default class Entity {
   onCollidedWith(){}
 
   maxVelocityX = 5
-  // remainderVelocityX = 0
-  // remainderVelocityY = 0
 
   constructor({world, spriteName, frames, pos = new Vec(0, 0), tags}) {
     this.world = world

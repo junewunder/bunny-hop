@@ -26,8 +26,6 @@ export default class Player extends Entity {
       tags: ['player']
     })
 
-    // this.sprite
-
     window.addEventListener('keydown', this.onKeyDown.bind(this))
     window.addEventListener('keyup', this.onKeyUp.bind(this))
   }
