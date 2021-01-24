@@ -22,9 +22,9 @@ export default class Player extends Entity {
     super({
       world,
       // spriteName: 'happie',
-      // spriteName: 'turtle',
-      spriteName: 'bunnysprite',
-      frames: 8,
+      spriteName: 'turtle',
+      // spriteName: 'bunnysprite',
+      // frames: 8,
       pos: new Vec(100, 100),
       tags: ['player']
     })
@@ -35,6 +35,7 @@ export default class Player extends Entity {
 
   update() {
     super.update()
+
     this.onGround = this.collider.check(new Vec(0, 1), 'solid')
     const { onGround, holdingLeft, holdingRight, holdingSpace, jumpQueued, framesSinceJump } = this
 
@@ -58,13 +59,12 @@ export default class Player extends Entity {
     }
     if (jumpQueued) this.framesSinceJump++
 
-    if (this.vx === 0 && this.sprite.currentFrame === 0) {
+    if ((this.vx < 1 && this.vx > -1) && this.sprite.currentFrame === 0) {
       this.sprite.stop?.()
     }
-    if (this.vx !== 0 && !this.sprite.playing) {
+    if ((this.vx < 1 && this.vx > -1) && !this.sprite.playing) {
       this.sprite.play?.()
     }
-    // this.container.x = 
   }
 
   onKeyDown(e) {
@@ -72,12 +72,14 @@ export default class Player extends Entity {
     if (e.code === "ArrowDown" || e.keyCode === 83) this.holdingDown = true
     if (e.code === "ArrowLeft" || e.keyCode === 65) {
       this.holdingLeft = true
+      // this.facing = -1
       // this.vy -= 5
       // this.vx += -2
       // this.vx += -1
     }
     if (e.code === "ArrowRight" || e.keyCode === 68) {
       this.holdingRight = true
+      // this.facing = 1
       // this.vy -= 5
       // this.vx += 2
       // this.vx += 1

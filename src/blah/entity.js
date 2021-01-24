@@ -9,8 +9,8 @@ export default class Entity {
   y = 0
   vx = 0
   vy = 0
-  // ax = 0 
-  // ay = 0
+  facing = 1
+
   sprite
   world
   collider
@@ -45,6 +45,17 @@ export default class Entity {
     this.moveY(this.vy)
     this.sprite.x = this.x * this.world.scale
     this.sprite.y = this.y * this.world.scale
+
+    // this.facing = (this.vx >= 1 || this.vx <= -1) ? vxSign : this.facing
+    if (this.facing !== vxSign && vxSign !== 0) {
+      this.facing = vxSign
+      this.sprite.scale.x = this.world.scale * this.facing
+      if (this.facing === 1) {
+        this.sprite.anchor.x = 0
+      } else {
+        this.sprite.anchor.x = 1
+      }
+    }
   }
 
   destroy(stage) {

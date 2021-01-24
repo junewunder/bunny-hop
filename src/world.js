@@ -34,23 +34,6 @@ export default class World {
     this.pixi.stage.addChild(this.stage)
     this.room = new Room(this.stage, this, level[this.currentRoom])
     this.createEntities(level[this.currentRoom].entities)
-    
-    // this.exitLeft = new Sign(this,
-    //   new Vec(0, 16 * 13), 
-    //   'exitLeft', 
-    //   [], 'player', 
-    //   () => this.prevRoom())
-    
-    // this.exitRight = new Sign(this,
-    //   new Vec(16 * 27, 16 * 13), 
-    //   'exitRight', 
-    //   [], 'player',
-    //   () => this.nextRoom())
-
-    // this.death = new Death(this, 
-    //   new Vec(0, 16 * 15.5), 
-    //   () => console.log('dead!')
-    // )
   }
 
   colliders(tag) {
@@ -100,8 +83,10 @@ export default class World {
     if (this.currentRoom + 1 > this.maxRoom) { return }
     this.room.destroy(this.stage)
     this.currentRoom++
-    console.log(this.currentRoom)
     this.room = new Room(this.stage, this, level[this.currentRoom])
+    Array.from(this.entities).map(x => x.destroy(this.stage))
+    this.entities = new Set()
+    this.createEntities(level[this.currentRoom].entities)
     this.resetPlayer(true)
   }
 
@@ -110,15 +95,22 @@ export default class World {
     this.room.destroy(this.stage)
     this.currentRoom--
     this.room = new Room(this.stage, this, level[this.currentRoom])
+    Array.from(this.entities).map(x => x.destroy(this.stage))
+    this.entities = new Set()
+    this.createEntities(level[this.currentRoom].entities)
     this.resetPlayer(false)
   }
 
   createEntities(entities) {
     for (let pos in entities) {
       let _, [x, y] = pos.split(',').map(x => parseInt(x))
-      console.log(x, y)
+      // console.log(x, y)
       switch (entities[pos]) {
         case 'player': 
+          console.log(x, y)
+          if (this.player) {
+            this.player.destroy(this.stage)
+          }
           this.player = new Player(this)
           this.player.x = x
           this.player.y = y
