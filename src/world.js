@@ -19,7 +19,7 @@ export default class World {
 
   mapName = 'levelbox'
   currentRoom = 0
-  maxRoom = 1
+  maxRoom = 2
 
   // shouldReset
 
@@ -71,12 +71,17 @@ export default class World {
     //   // )
     // // this.stage.y = this.player.y * this.scale - this.pixi.stage.height / 2
 
-    this.player.vy += 1
-    if (this.player.onGround) {
-      this.player.vx -= Math.sign(this.player.vx)
+    const { player }  = this
+
+    player.vy += .5
+    if (player.onGround) {
+      player.vx -= Math.sign(player.vx)
+    } else {
+      player.vx -= Math.sign(player.vx) / 2
+      // player.vy -= Math.sign(player.vy) // 60
     }
 
-    if (this.player.y > 1000) {
+    if (player.y > 1000) {
       this.resetPlayer()
     }
   }

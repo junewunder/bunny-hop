@@ -14,6 +14,14 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 16 },
     "sourceSize": { "w": 28, "h": 16 },
     "duration": 100
+   },
+   "levelbox 2.aseprite": {
+    "frame": { "x": 56, "y": 0, "w": 28, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 16 },
+    "sourceSize": { "w": 28, "h": 16 },
+    "duration": 100
    }
  },
  "meta": {
@@ -21,7 +29,7 @@
   "version": "1.2.25",
   "image": "levelbox.png",
   "format": "RGBA8888",
-  "size": { "w": 56, "h": 16 },
+  "size": { "w": 84, "h": 16 },
   "scale": "1",
   "frameTags": [
   ],
