@@ -11,11 +11,14 @@ export default class Player extends Entity {
   holdingLeft = false
   holdingSpace = false
 
+  hopCooldown = 15
+
   jumpQueued = false
   framesSinceJump = 0
   JUMP_QUEUE_LENGTH = 30
 
-  framesSinceOnGround = 0
+  framesOnGround = 0
+  framesOffGround = 0
   JUMP_FORGIVENESS = 15
 
   constructor(world) {
@@ -40,36 +43,42 @@ export default class Player extends Entity {
     this.onGround = this.collider.check(new Vec(0, 1), 'solid')
     const { onGround, holdingLeft, holdingRight, holdingSpace, jumpQueued, framesSinceJump } = this
 
-    if (onGround) this.framesSinceOnGround = 0
-    else this.framesSinceOnGround++
+    if (onGround) this.framesOffGround = 0
+    else this.framesOffGround++
+    
+    if (onGround) this.framesOnGround++
+    else this.framesOnGround = 0
 
     if (holdingRight && !holdingLeft) {
-      if (onGround) this.vy -= 3
+      if (onGround && this.framesOnGround > this.hopCooldown) this.vy -= 3
       this.vx += onGround ? 2 : 1
     }
     if (holdingLeft && !holdingRight) {
-      if (onGround) this.vy -= 3
+      if (onGround && this.framesOnGround > this.hopCooldown) this.vy -= 3
       this.vx += onGround ? -2 : -1
     }
     if (
       ((holdingSpace || (jumpQueued && framesSinceJump < this.JUMP_QUEUE_LENGTH)) 
       && onGround)
-      || (holdingSpace && this.framesSinceOnGround <= this.JUMP_FORGIVENESS)) {
+      || (holdingSpace && this.framesOffGround <= this.JUMP_FORGIVENESS)) {
       this.jumpQueued = false
       this.vy = -7
     }
     if (jumpQueued) this.framesSinceJump++
 
-    if ((this.vx < 1 && this.vx > -1) && this.sprite.currentFrame === 0) {
+    if (Math.abs(this.vx) < 1 && this.sprite.currentFrame === 0) {
       this.sprite.stop?.()
     }
-    if ((this.vx < 1 && this.vx > -1) && !this.sprite.playing) {
+    if (Math.abs(this.vx) > 1 && !this.sprite.playing) {
       this.sprite.play?.()
     }
   }
 
   onKeyDown(e) {
-    if (e.code === "ArrowUp" || e.keyCode === 87) this.holdingUp = true
+    if (e.code === "ArrowUp" || e.keyCode === 87) {
+      this.holdingSpace = true // lol quick fix for jumping with up arrow
+      this.holdingUp = true
+    }
     if (e.code === "ArrowDown" || e.keyCode === 83) this.holdingDown = true
     if (e.code === "ArrowLeft" || e.keyCode === 65) {
       this.holdingLeft = true
@@ -93,7 +102,10 @@ export default class Player extends Entity {
   }
 
   onKeyUp(e) {
-    if (e.code === "ArrowUp" || e.keyCode === 87) this.holdingUp = false
+    if (e.code === "ArrowUp" || e.keyCode === 87) {
+      this.holdingSpace = false
+      this.holdingUp = false
+    }
     if (e.code === "ArrowDown" || e.keyCode === 83) this.holdingDown = false
     if (e.code === "ArrowLeft" || e.keyCode === 65) this.holdingLeft = false
     if (e.code === "ArrowRight" || e.keyCode === 68) this.holdingRight = false

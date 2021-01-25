@@ -1,26 +1,26 @@
 { "frames": {
    "levellong 0.aseprite": {
-    "frame": { "x": 0, "y": 0, "w": 67, "h": 29 },
+    "frame": { "x": 0, "y": 0, "w": 67, "h": 23 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 67, "h": 29 },
-    "sourceSize": { "w": 67, "h": 29 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 67, "h": 23 },
+    "sourceSize": { "w": 67, "h": 23 },
     "duration": 100
    },
    "levellong 1.aseprite": {
-    "frame": { "x": 67, "y": 0, "w": 67, "h": 29 },
+    "frame": { "x": 67, "y": 0, "w": 67, "h": 23 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 67, "h": 29 },
-    "sourceSize": { "w": 67, "h": 29 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 67, "h": 23 },
+    "sourceSize": { "w": 67, "h": 23 },
     "duration": 100
    },
    "levellong 2.aseprite": {
-    "frame": { "x": 134, "y": 0, "w": 67, "h": 29 },
+    "frame": { "x": 134, "y": 0, "w": 67, "h": 23 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 67, "h": 29 },
-    "sourceSize": { "w": 67, "h": 29 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 67, "h": 23 },
+    "sourceSize": { "w": 67, "h": 23 },
     "duration": 100
    }
  },
@@ -29,12 +29,12 @@
   "version": "1.2.25",
   "image": "levellong.png",
   "format": "RGBA8888",
-  "size": { "w": 201, "h": 29 },
+  "size": { "w": 201, "h": 23 },
   "scale": "1",
   "frameTags": [
   ],
   "layers": [
-   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+   { "name": "entity", "opacity": 255, "blendMode": "normal" }
   ],
   "slices": [
   ]
