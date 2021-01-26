@@ -38,7 +38,7 @@ const screens = []
 for (let frame of ase.frames) {
   const { pixels, width, height } = frame.chunks[frame.chunks.length - 2].data
   const { pixels: entitypixels, x: eX, y: eY, width: eWidth, height: eHeight } = frame.chunks[frame.chunks.length - 1].data
-  console.log(frame.chunks[frame.chunks.length - 1].data)
+  // console.log(frame.chunks[frame.chunks.length - 1].data)
   const rgbs = pixelsToRGBStrings(pixels)
   screens.push({
     width, height, 

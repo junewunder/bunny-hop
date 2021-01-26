@@ -23,7 +23,7 @@ export default class World {
   room
 
   currentRoom = 0
-  maxRoom = 2
+  maxRoom = 10
 
   framesSincePanY = 0
   framesBetweenPanY = 10
