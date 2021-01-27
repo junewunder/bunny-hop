@@ -30,6 +30,30 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 67, "h": 23 },
     "sourceSize": { "w": 67, "h": 23 },
     "duration": 100
+   },
+   "levellong 4.aseprite": {
+    "frame": { "x": 268, "y": 0, "w": 67, "h": 23 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 67, "h": 23 },
+    "sourceSize": { "w": 67, "h": 23 },
+    "duration": 100
+   },
+   "levellong 5.aseprite": {
+    "frame": { "x": 335, "y": 0, "w": 67, "h": 23 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 67, "h": 23 },
+    "sourceSize": { "w": 67, "h": 23 },
+    "duration": 100
+   },
+   "levellong 6.aseprite": {
+    "frame": { "x": 402, "y": 0, "w": 67, "h": 23 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 67, "h": 23 },
+    "sourceSize": { "w": 67, "h": 23 },
+    "duration": 100
    }
  },
  "meta": {
@@ -37,7 +61,7 @@
   "version": "1.2.25",
   "image": "levellong.png",
   "format": "RGBA8888",
-  "size": { "w": 268, "h": 23 },
+  "size": { "w": 469, "h": 23 },
   "scale": "1",
   "frameTags": [
   ],

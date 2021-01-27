@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js'
 import Collider from './collider'
 import Rect from './rect'
-import makeSprite from './makeSprite'
+import makeSprite, { makeTextures } from './makeSprite'
 import Vec from './vec'
 
 export default class Entity {
@@ -19,7 +19,7 @@ export default class Entity {
 
   maxVelocityX = 5
 
-  constructor({world, spriteName, frames, pos = new Vec(0, 0), tags}) {
+  constructor({world, spriteName, frames, pos = new Vec(0, 0), tags = []}) {
     this.world = world
     this.sprite = makeSprite(spriteName, frames)
     this.collider = Collider.makeRect(
@@ -92,4 +92,12 @@ export default class Entity {
   set pos({x, y}) {this.x = x; this.y = y}
   get vel() { return new Vec(this.vx, this.vy) }
   set vel({x, y}) {this.vx = x; this.vy = y}
+
+  swapTexture(name, frames, {onLoop, onComplete}) {
+    this.sprite.textures = makeTextures(name, frames)
+    this.sprite.onLoop = onLoop
+    this.sprite.onComplete = onComplete
+    this.sprite.animationSpeed = .3 + (Math.random() * .2) - .1
+    this.sprite.play()
+  }
 }

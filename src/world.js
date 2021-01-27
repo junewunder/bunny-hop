@@ -12,6 +12,9 @@ import CoinBig from './entities/coinbig'
 import Death from './entities/death'
 
 import level from '../assets/bunnyhop/levellong.level.json'
+import Spike from './entities/spike'
+import PlatformBumper from './entities/platform-bumper'
+import MovingPlatform from './entities/moving-platform'
 
 export default class World {
   scale = 2 // 1 in game unit * scale = on screen pixels
@@ -22,11 +25,13 @@ export default class World {
   entities = new Set()
   room
 
-  currentRoom = 0
+  currentRoom = 6
   maxRoom = 10
 
   framesSincePanY = 0
   framesBetweenPanY = 10
+
+  playerStart = new Vec(0, 0)
 
   constructor(pixi) {
     this.pixi = pixi
@@ -38,7 +43,12 @@ export default class World {
   }
 
   colliders(tag) {
-    return [this.player.collider, this.room.collider].concat(Array.from(this.entities))
+    // if (tag === 'platformsolid')
+    //   console.log([this.player.collider, this.room.collider]
+    //     .concat(Array.from(this.entities).map(x => x.collider))
+    //     .filter(x => x.tags?.includes?.(tag)))
+    return [this.player.collider, this.room.collider]
+      .concat(Array.from(this.entities).map(x => x.collider))
       .filter(x => x.tags?.includes?.(tag))
   }
 
@@ -51,10 +61,9 @@ export default class World {
     }
 
     // camera attempt
-    stage.x = 
-      Math.min(0, Math.max(-pixi.stage.width - 3 * 16 * scale + window.innerWidth,
-        -(player.x * scale - window.innerWidth / 2)
-      ))
+    stage.x = Math.min(0, Math.max(-pixi.stage.width - 3 * 16 * scale + window.innerWidth,
+      -(player.x * scale - window.innerWidth / 2)
+    ))
     
 
     player.vy += .5
@@ -65,19 +74,15 @@ export default class World {
       // player.vy -= Math.sign(player.vy) // 60
     }
 
-    if (player.y > 1000) {
+    if (player.y > 1000 || player.collider.check(Vec.zero(), 'death')) {
       this.resetPlayer()
     }
   }
 
   resetPlayer(onLeft = true) {
-    if (onLeft) {
-      this.player.pos = new Vec(16 * 1.5, 16 * 13)
-    } else {
-      this.player.pos = new Vec(16 * 24.5, 16 * 13)
-    } 
-    // this.player.vx = 0
-    // this.player.vy = 0
+    // todo: start player on right if they're coming from the right
+    this.player.pos = this.playerStart
+    this.player.vy = 0
   }
 
   nextRoom() {
@@ -105,13 +110,12 @@ export default class World {
   createEntities(entities) {
     for (let pos in entities) {
       let _, [x, y] = pos.split(',').map(x => parseInt(x))
-      // console.log(x, y)
       switch (entities[pos]) {
         case 'player': 
-          console.log(x, y)
           if (this.player) {
             this.player.destroy(this.stage)
           }
+          this.playerStart = new Vec(x, y)
           this.player = new Player(this)
           this.player.x = x
           this.player.y = y
@@ -127,11 +131,30 @@ export default class World {
 
         case 'coin': 
           let coin = new Coin(this, new Vec(x, y), () => {
-            this.entities.delete(coin)
-            coin.destroy(this.stage)
+            coin.destroy(this.stage, () => this.entities.delete(coin))
           })
           this.entities.add(coin)
           break;
+        
+        case 'spike':
+          this.entities.add(
+            new Spike(this, new Vec(x, y), () => {
+              this.resetPlayer()
+            })
+          )
+          break;
+
+        case 'platformbumper':
+          this.entities.add(
+            new PlatformBumper(this, new Vec(x, y))
+          )
+          break;
+        
+        case 'movingplatform':
+        this.entities.add(
+          new MovingPlatform(this, new Vec(x, y), {vx: -1})
+        )
+        break;
 
         case 'signLeft':
           this.entities.add(

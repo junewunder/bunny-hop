@@ -15,12 +15,12 @@ export default class Collider {
 
   constructor () {}
 
-  static makeRect (entity, rect, tags = []) {
+  static makeRect (entity, rect, tags) {
     const collider = new Collider();
     collider.shape = Collider.RECT
     collider.entity = entity
     collider.hitbox = rect
-    collider.tags = collider.tags.concat(tags)
+    collider.tags = [...tags]
     return collider
   }
   static makeGrid (grid, tags = []) {

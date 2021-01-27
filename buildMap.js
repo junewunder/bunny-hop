@@ -28,6 +28,9 @@ function rgbsToEntities(pixels, width, height, offsetX, offsetY) {
         'rgb(255,219,162)': 'signEmpty',
         'rgb(255,162,0)': 'signRight',
         'rgb(195,113,0)': 'player',
+        'rgb(121,121,121)': 'spike',
+        'rgb(97,16,162)': 'platformbumper',
+        'rgb(146,65,243)': 'movingplatform',
       })[pixels[x + y * width]]
     }
   }

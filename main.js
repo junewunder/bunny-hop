@@ -26,7 +26,11 @@ app.loader
   .add('signs', 'bunnyhop/signs.json')
   .add('death', 'bunnyhop/death.json')
   .add('coin', 'bunnyhop/coin.json')
+  .add('coincollect', 'bunnyhop/coincollect.json')
   .add('coinbig', 'bunnyhop/coinbig.json')
+  .add('spike', 'bunnyhop/spike.json')
+  .add('platformbumper', 'bunnyhop/platformbumper.json')
+  .add('movingplatform', 'bunnyhop/movingplatform.json')
   .load(onAssetsLoaded);
 
 function onAssetsLoaded ({resources}) {  

@@ -1,5 +1,6 @@
 import Vec from '../blah/vec'
 import Entity from "../blah/entity"
+import makeSprite from '../blah/makeSprite'
 
 export default class Coin extends Entity {
   collected = false
@@ -12,13 +13,28 @@ export default class Coin extends Entity {
       spriteName: 'coin',
       frames: 18
     })
-    this.onCollide = onCollide
+    this.onCollide = this.onCollidedWith = () => {
+      this.collected = true
+      onCollide()
+    }
   }
 
   update() {
     super.update()
-    if (this.collider.check(Vec.zero(), 'player')) {
-      this.collected = true
+    if (!this.collected) {
+      this.collider.check(Vec.zero(), 'player')
     }
+  }
+
+  destroy(stage, afterAnim) {
+    if (!this.collected) {
+      super.destroy(stage)
+      return
+    }
+
+    this.swapTexture('coincollect', 7, {onLoop: () => {
+      afterAnim?.() // todo figure out whats happening here
+      super.destroy(stage)
+    }})
   }
 }
