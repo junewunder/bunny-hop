@@ -25,7 +25,7 @@ export default class World {
   entities = new Set()
   room
 
-  currentRoom = 6
+  currentRoom = 1
   maxRoom = 10
 
   framesSincePanY = 0
