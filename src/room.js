@@ -3,33 +3,6 @@ import Collider from './blah/collider';
 import Grid from './blah/grid'
 import makeSprite from './blah/makeSprite'
 
-const tileset = {
-  'rgb(0,0,0)': {
-    solid: false,
-    texture: null,
-  },
-  'rgb(154,32,121)': {
-    solid: true,
-    texture: 'platforms 1'
-  },
-  'rgb(219,65,195)': {
-    solid: true,
-    texture: 'platforms 2'
-  },
-  'rgb(243,97,255)': {
-    solid: true,
-    texture: 'platforms 3'
-  },
-  'rgb(178,16,48)': {
-    solid: true,
-    texture: 'platforms 4'
-  },
-  'rgb(219,65,97)': {
-    solid: true,
-    texture: 'platforms 5'
-  },
-}
-
 export default class Room {
   roomData;
   collider;
@@ -39,9 +12,9 @@ export default class Room {
   constructor(stage, world, roomData) {
     this.world = world
     this.roomData = roomData
-    const { collisionGrid, container } = this.loadRoom(this.roomData)
+    const { rows, cols, solidity, container } = this.loadRoom(this.roomData)
     this.container = container
-    this.collider = Collider.makeGrid(Grid.fromSolidity(collisionGrid), ['solid'])
+    this.collider = Collider.makeGrid(Grid.fromSolidity(solidity, rows, cols), ['solid'])
     stage.addChild(this.container)
   }
 
@@ -49,40 +22,42 @@ export default class Room {
 
   }
 
-  destroy(stage) {
-    stage.removeChild(this.container)
+  destroy() {
+    this.world.stage.removeChild(this.container)
   }
 
   loadRoom(roomData) {
+    const TILE_SIZE = 16
+    const rows = roomData.layerInstances[1].__cHei
+    const cols = roomData.layerInstances[1].__cWid
+
     const container = new PIXI.Container()
-    const collisionGrid = []
+    const solidity = new Array((rows + 1) * (cols + 1))
+    for (let i in solidity) solidity[i] = false
 
-    // TODO: make collisiongrid one dimensional
-    for (let y = 0; y < roomData.height; y++) {
-      collisionGrid.push([])
-      for (let x = 0; x < roomData.width; x++) {
-        const loc = x + y * roomData.width
-        const color = roomData.pixels[loc]
-        const tile = tileset[color]
-        tile ? null : console.log(color.toString(16))
-        
-        collisionGrid[collisionGrid.length - 1].push(!!tile?.solid)
+    for (let tile of roomData.layerInstances[1].gridTiles) {
+      const x = tile.px[0] / TILE_SIZE
+      const y = tile.px[1] / TILE_SIZE  
+      // NOTE: this will cause an issue in the future if there are more than 16 rows of tiles
+      const frame = Math.floor(tile.src[0] / TILE_SIZE) + (Math.floor(tile.src[1] / TILE_SIZE) * 5)
 
-        if (tile?.texture) {
-          const sprite = makeSprite(tile.texture);
-          const scale = this.world.scale * 16
-          sprite.x = scale * x
-          sprite.y = scale * y
-          sprite.width = sprite.height = scale
-          container.addChild(sprite)
-        }
-      }
+      solidity[x + y * cols] = true
+
+      const sprite = makeSprite(`platforms ${frame}`);
+      const scale = this.world.scale * 16
+      sprite.x = scale * x
+      sprite.y = scale * y
+      sprite.width = sprite.height = scale
+      container.addChild(sprite)
     }
 
     container.cacheAsBitmap = true
+
     return {
       container,
-      collisionGrid
+      rows,
+      cols,
+      solidity
     }
   }
 }

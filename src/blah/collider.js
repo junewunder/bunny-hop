@@ -78,7 +78,7 @@ export default class Collider {
 
     for (let x = left; x < right; x++)
       for (let y = top; y < bottom; y++)
-        if (grid.hitbox.solidity[y][x]) {
+        if (grid.hitbox.get(x, y)) {
           rect.entity.onCollidedWith?.()
           return true;
         }

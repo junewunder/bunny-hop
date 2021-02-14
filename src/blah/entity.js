@@ -18,6 +18,7 @@ export default class Entity {
   onCollidedWith(){}
 
   maxVelocityX = 5
+  limitVelocity = true
 
   constructor({world, spriteName, frames, pos = new Vec(0, 0), tags = []}) {
     this.world = world
@@ -40,7 +41,9 @@ export default class Entity {
 
   update() {
     const vxSign = Math.sign(this.vx)
-    this.vx = vxSign * Math.min(Math.abs(this.vx), this.maxVelocityX)
+    if (this.limitVelocity) {
+      this.vx = vxSign * Math.min(Math.abs(this.vx), this.maxVelocityX)
+    }
     this.moveX(this.vx)
     this.moveY(this.vy)
     this.sprite.x = this.x * this.world.scale
@@ -58,13 +61,20 @@ export default class Entity {
     }
   }
 
-  destroy(stage) {
-    stage.removeChild(this.sprite)
+  destroy() {
+    this.world.stage.removeChild(this.sprite)
   }
 
   moveX (amount) {
     while (amount >= 1 || amount <= -1) {
       const sign = Math.sign(amount)
+
+      // HMMMM!!!!
+      // if (this.collider.check(new Vec(sign, 0), 'movingsolid')) {
+      //   this.vx = 0
+      //   return
+      // }
+
       if (this.collider.check(new Vec(sign, 0), 'solid')) {
         this.vx = 0
         return

@@ -11,13 +11,21 @@ import Coin from './entities/coin'
 import CoinBig from './entities/coinbig'
 import Death from './entities/death'
 
-import level from '../assets/bunnyhop/levellong.level.json'
+// import level from '../assets/bunnyhop/levellong.level.json'
+import map from '../assets/bunnyhop/level01.json'
 import Spike from './entities/spike'
 import PlatformBumper from './entities/platform-bumper'
 import MovingPlatform from './entities/moving-platform'
 
+// entities
+console.log(map.levels[0].layerInstances[0].entityInstances)
+// tiles
+console.log(map.levels[0].pxWid, ',', map.levels[0].pxHei)
+console.log(map.levels[0].layerInstances[1].gridTiles)
+
 export default class World {
   scale = 2 // 1 in game unit * scale = on screen pixels
+  // scale = window.innerHeight / 23 * .95
   stage
   camera
   pixi
@@ -25,7 +33,7 @@ export default class World {
   entities = new Set()
   room
 
-  currentRoom = 1
+  currentRoom = 0
   maxRoom = 10
 
   framesSincePanY = 0
@@ -38,15 +46,15 @@ export default class World {
     this.camera = new Camera({ticker: pixi.ticker})
     this.stage = new PIXI.Container()
     this.pixi.stage.addChild(this.stage)
-    this.room = new Room(this.stage, this, level[this.currentRoom])
-    this.createEntities(level[this.currentRoom].entities)
+
+    // TODO REMOVE BEFORE SHIPPING
+    // this.currentRoom = map.levels.length - 1
+
+    this.room = new Room(this.stage, this, map.levels[this.currentRoom])
+    this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances)
   }
 
   colliders(tag) {
-    // if (tag === 'platformsolid')
-    //   console.log([this.player.collider, this.room.collider]
-    //     .concat(Array.from(this.entities).map(x => x.collider))
-    //     .filter(x => x.tags?.includes?.(tag)))
     return [this.player.collider, this.room.collider]
       .concat(Array.from(this.entities).map(x => x.collider))
       .filter(x => x.tags?.includes?.(tag))
@@ -87,12 +95,12 @@ export default class World {
 
   nextRoom() {
     if (this.currentRoom + 1 > this.maxRoom) { return }
-    this.room.destroy(this.stage)
+    this.room.destroy()
     this.currentRoom++
-    this.room = new Room(this.stage, this, level[this.currentRoom])
-    Array.from(this.entities).map(x => x.destroy(this.stage))
+    this.room = new Room(this.stage, this, map.levels[this.currentRoom])
+    Array.from(this.entities).map(x => x.destroy())
     this.entities = new Set()
-    this.createEntities(level[this.currentRoom].entities)
+    this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances)
     this.resetPlayer(true)
   }
 
@@ -100,20 +108,21 @@ export default class World {
     if (this.currentRoom - 1 < 0) { return }
     this.room.destroy(this.stage)
     this.currentRoom--
-    this.room = new Room(this.stage, this, level[this.currentRoom])
-    Array.from(this.entities).map(x => x.destroy(this.stage))
+    this.room = new Room(this.stage, this, map.levels[this.currentRoom])
+    Array.from(this.entities).map(x => x.destroy())
     this.entities = new Set()
-    this.createEntities(level[this.currentRoom].entities)
+    this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances, { onLeft: false })
     this.resetPlayer(false)
+    this.player.vx = -1
   }
 
-  createEntities(entities) {
-    for (let pos in entities) {
-      let _, [x, y] = pos.split(',').map(x => parseInt(x))
-      switch (entities[pos]) {
-        case 'player': 
+  createEntities(entities, { onLeft } = { onLeft: true }) {
+    for (let entity of entities) {
+      let [x, y] = entity.px
+      switch (entity.__identifier) {
+        case onLeft ? 'Player' : 'PlayerRight':
           if (this.player) {
-            this.player.destroy(this.stage)
+            this.player.destroy()
           }
           this.playerStart = new Vec(x, y)
           this.player = new Player(this)
@@ -121,22 +130,22 @@ export default class World {
           this.player.y = y
           break;
         
-        case 'coinBig':
+        case 'CoinBig':
           let coinbig = new CoinBig(this, new Vec(x, y), () => {
             this.entities.delete(coinbig)
-            coinbig.destroy(this.stage)
+            coinbig.destroy()
           })
           this.entities.add(coinbig)
           break;
 
-        case 'coin': 
+        case 'Coin': 
           let coin = new Coin(this, new Vec(x, y), () => {
-            coin.destroy(this.stage, () => this.entities.delete(coin))
+            coin.destroy(() => this.entities.delete(coin))
           })
           this.entities.add(coin)
           break;
         
-        case 'spike':
+        case 'Spike':
           this.entities.add(
             new Spike(this, new Vec(x, y), () => {
               this.resetPlayer()
@@ -144,31 +153,31 @@ export default class World {
           )
           break;
 
-        case 'platformbumper':
+        case 'PlatformBumper':
           this.entities.add(
             new PlatformBumper(this, new Vec(x, y))
           )
           break;
         
-        case 'movingplatform':
-        this.entities.add(
-          new MovingPlatform(this, new Vec(x, y), {vx: -1})
-        )
+        case 'MovingPlatform':
+          this.entities.add(
+            new MovingPlatform(this, new Vec(x, y), {vx: -1})
+          )
         break;
 
-        case 'signLeft':
+        case 'SignLeft':
           this.entities.add(
             new Sign(this, new Vec(x, y), 'exitLeft', [], 'player', () => this.prevRoom())
           )
           break;
         
-        case 'signRight':
+        case 'SignRight':
           this.entities.add(
             new Sign(this, new Vec(x, y), 'exitRight', [], 'player', () => this.nextRoom())
           )
           break;
         
-        case 'signEmpty':
+        case 'SignEmpty':
           this.entities.add(
             new Sign(this, new Vec(x, y), 'empty', [], 'player', () => null)
           )

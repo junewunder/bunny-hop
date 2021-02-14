@@ -26,15 +26,15 @@ export default class Coin extends Entity {
     }
   }
 
-  destroy(stage, afterAnim) {
+  destroy(afterAnim) {
     if (!this.collected) {
-      super.destroy(stage)
+      super.destroy()
       return
     }
 
     this.swapTexture('coincollect', 7, {onLoop: () => {
       afterAnim?.() // todo figure out whats happening here
-      super.destroy(stage)
+      super.destroy()
     }})
   }
 }

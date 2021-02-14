@@ -4,13 +4,13 @@ export default class Grid {
   solidity = []
   tileSize = 16
 
-  static fromSolidity (map) {
+  static fromSolidity (solidity, rows, cols) {
     const grid = new Grid()
-    grid.rows = map.length
-    grid.cols = map[0].length
-    grid.solidity = map.map(row => row.concat())
+    grid.rows = rows
+    grid.cols = cols
+    grid.solidity = solidity.concat()
     return grid
   }
 
-  get(x, y) { return this.solidity?.[y]?.[x] }
+  get(x, y) { return this.solidity?.[x + y * this.cols] }
 }
