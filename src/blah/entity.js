@@ -40,10 +40,12 @@ export default class Entity {
   }
 
   update() {
-    const vxSign = Math.sign(this.vx)
+    const { sign, min, max, abs } = Math
+    const vxSign = sign(this.vx)
     if (this.limitVelocity) {
-      this.vx = vxSign * Math.min(Math.abs(this.vx), this.maxVelocityX)
+      this.vx = vxSign * min(abs(this.vx), this.maxVelocityX)
     }
+
     this.moveX(this.vx)
     this.moveY(this.vy)
     this.sprite.x = this.x * this.world.scale
@@ -68,12 +70,6 @@ export default class Entity {
   moveX (amount) {
     while (amount >= 1 || amount <= -1) {
       const sign = Math.sign(amount)
-
-      // HMMMM!!!!
-      // if (this.collider.check(new Vec(sign, 0), 'movingsolid')) {
-      //   this.vx = 0
-      //   return
-      // }
 
       if (this.collider.check(new Vec(sign, 0), 'solid')) {
         this.vx = 0

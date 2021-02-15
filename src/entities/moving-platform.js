@@ -6,7 +6,7 @@ export default class MovingPlatform extends Entity {
     super({
       world, pos,
       spriteName: 'movingplatform',
-      tags: ['solid', 'platformsolid']
+      tags: ['solid', 'platformsolid', 'movingsolid']
     })
     this.vx = vx
     this.vy = vy
@@ -23,6 +23,11 @@ export default class MovingPlatform extends Entity {
   moveX(amount) {
     while (amount >= 1 || amount <= -1) {
       const sign = Math.sign(amount)
+      if (this.collider.check(new Vec(sign, 0), 'player')) {
+        this.x -= sign
+        return
+      }
+
       if (this.collider.check(new Vec(sign, 0), 'solid')
         || this.collider.check(new Vec(sign, 0), 'platformsolid')) {
         this.vx = -this.vx
@@ -37,6 +42,12 @@ export default class MovingPlatform extends Entity {
   moveY(amount) {
     while (amount >= 1 || amount <= -1) {
       const sign = Math.sign(amount)
+
+      if (this.collider.check(new Vec(0, sign), 'player')) {
+        this.y -= sign
+        return
+      }
+
       if (this.collider.check(new Vec(0, sign), 'solid')
         || this.collider.check(new Vec(0, sign), 'platformsolid')) {
         this.vy = 0

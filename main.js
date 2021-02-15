@@ -28,9 +28,13 @@ app.loader
   .add('coin', 'bunnyhop/coin.json')
   .add('coincollect', 'bunnyhop/coincollect.json')
   .add('coinbig', 'bunnyhop/coinbig.json')
+  .add('coinbigcollect', 'bunnyhop/coinbigcollect.json')
   .add('spike', 'bunnyhop/spike.json')
   .add('platformbumper', 'bunnyhop/platformbumper.json')
   .add('movingplatform', 'bunnyhop/movingplatform.json')
+  
+  .add('tut_congrats', 'bunnyhop/tut_congrats.png')
+  
   .load(onAssetsLoaded);
 
 function onAssetsLoaded ({resources}) {  

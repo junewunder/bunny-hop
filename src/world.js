@@ -97,8 +97,8 @@ export default class World {
     if (this.currentRoom + 1 > this.maxRoom) { return }
     this.room.destroy()
     this.currentRoom++
+    this.stage.removeChildren()
     this.room = new Room(this.stage, this, map.levels[this.currentRoom])
-    Array.from(this.entities).map(x => x.destroy())
     this.entities = new Set()
     this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances)
     this.resetPlayer(true)
@@ -108,8 +108,8 @@ export default class World {
     if (this.currentRoom - 1 < 0) { return }
     this.room.destroy(this.stage)
     this.currentRoom--
+    this.stage.removeChildren()
     this.room = new Room(this.stage, this, map.levels[this.currentRoom])
-    Array.from(this.entities).map(x => x.destroy())
     this.entities = new Set()
     this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances, { onLeft: false })
     this.resetPlayer(false)
@@ -132,8 +132,7 @@ export default class World {
         
         case 'CoinBig':
           let coinbig = new CoinBig(this, new Vec(x, y), () => {
-            this.entities.delete(coinbig)
-            coinbig.destroy()
+            coinbig.destroy(() => this.entities.delete(coinbig))
           })
           this.entities.add(coinbig)
           break;
@@ -181,6 +180,13 @@ export default class World {
           this.entities.add(
             new Sign(this, new Vec(x, y), 'empty', [], 'player', () => null)
           )
+          break;
+        
+        case 'Tutorial':
+          const sprite = new PIXI.Sprite(new PIXI.Texture.from(`tut_${entity.fieldInstances[0].__value}`))
+          sprite.x = x * this.scale
+          sprite.y = y * this.scale
+          this.stage.addChild(sprite)
           break;
       }
     }

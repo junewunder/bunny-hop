@@ -15,7 +15,7 @@ export default class Coin extends Entity {
     })
     this.onCollide = this.onCollidedWith = () => {
       this.collected = true
-      onCollide()
+      onCollide?.()
     }
   }
 
@@ -33,7 +33,7 @@ export default class Coin extends Entity {
     }
 
     this.swapTexture('coincollect', 7, {onLoop: () => {
-      afterAnim?.() // todo figure out whats happening here
+      afterAnim?.()
       super.destroy()
     }})
   }

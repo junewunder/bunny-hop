@@ -4,6 +4,8 @@ import Entity from './blah/entity'
 
 export default class Player extends Entity {
 
+  respawning = false
+
   onGround = false
   holdingUp = false
   holdingDown = false
@@ -38,6 +40,25 @@ export default class Player extends Entity {
   }
 
   update() {
+
+    if (this.respawning) {
+      this.sprite.x = this.x * this.world.scale
+      this.sprite.y = this.y * this.world.scale
+      return
+    }
+
+    const { sign, max, min } = Math
+    let movingSolid = this.collider.check(new Vec(0, 1), 'movingsolid')
+    if (movingSolid) {
+      const otherVx = movingSolid.entity.vx
+      if (sign(otherVx) === sign(this.vx) || this.vx === 0) {
+        this.vx = sign(otherVx) > 0
+          ? max(this.vx, otherVx)
+          : min(this.vx, otherVx)
+        console.log(this.vx);
+      }
+    }
+    
     super.update()
 
     this.onGround = this.collider.check(new Vec(0, 1), 'solid')

@@ -35,7 +35,7 @@ export default class Collider {
     for (let other of this.entity.world.colliders(tag)) {
       if (this === other) continue
       if (this.overlaps(other, offset)) {
-        return true
+        return other
       }
     }
     return false

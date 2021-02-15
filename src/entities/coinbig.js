@@ -12,13 +12,30 @@ export default class CoinBig extends Entity {
       spriteName: 'coinbig',
       frames: 28
     })
-    this.onCollide = onCollide
+    this.onCollide = this.onCollidedWith = () => {
+      this.collected = true
+      onCollide?.()
+    }
   }
 
   update() {
     super.update()
-    if (this.collider.check(Vec.zero(), 'player')) {
-      this.collected = true
+    if (!this.collected) {
+      this.collider.check(Vec.zero(), 'player')
     }
+  }
+
+  destroy(afterAnim) {
+    if (!this.collected) {
+      super.destroy()
+      return
+    }
+
+    this.swapTexture('coinbigcollect', 8, {
+      onLoop: () => {
+        afterAnim?.()
+        super.destroy()
+      }
+    })
   }
 }

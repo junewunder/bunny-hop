@@ -11,7 +11,7 @@ export function makeTextures(name, numFrames) {
 export default function makeSprite(name, numFrames = 1) {
   if (numFrames === 1) {
     const sprite = new PIXI.Sprite(PIXI.Texture.from(`${name}.aseprite`))
-    sprite.roundPixels
+    sprite.roundPixels = true
     return sprite
   }
 
