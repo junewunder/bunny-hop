@@ -20,6 +20,7 @@ app.stage.addChild(graphics);
 
 app.loader
   .add('bunnysprite', 'bunnyhop/bunnysprite.json')
+  .add('bunnyrespawn', 'bunnyhop/bunnyrespawn.json')
   .add('happie', 'bunnyhop/happie.json')
   .add('turtle', 'bunnyhop/turtle.json')
   .add('platforms', 'bunnyhop/platforms.json')

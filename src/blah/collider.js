@@ -32,13 +32,15 @@ export default class Collider {
   }
 
   check(offset, tag) {
+    let collisions = []
     for (let other of this.entity.world.colliders(tag)) {
       if (this === other) continue
       if (this.overlaps(other, offset)) {
-        return other
+        collisions.push(other)
       }
     }
-    return false
+    if (collisions.length > 0) return collisions
+    else return false
   }
 
   overlaps(other, offset) {
@@ -60,8 +62,8 @@ export default class Collider {
     const br = b.hitbox.add(b.entity.pos)
 
     if (ar.overlaps(br)) {
-      a.entity.onCollide?.()
-      b.entity.onCollidedWith?.()
+      a.entity.onCollide?.(b)
+      b.entity.onCollide?.(a)
       return true
     }
     return false
@@ -79,7 +81,7 @@ export default class Collider {
     for (let x = left; x < right; x++)
       for (let y = top; y < bottom; y++)
         if (grid.hitbox.get(x, y)) {
-          rect.entity.onCollidedWith?.()
+          rect.entity.onCollide?.(grid)
           return true;
         }
 

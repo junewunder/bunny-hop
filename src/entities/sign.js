@@ -16,7 +16,6 @@ export default class Sign extends Entity {
       spriteName: `signs ${Sign.signNames[name] || 0}`,
     })
     this.onCollide = onCollide
-    this.onCollidedWith = onCollide
     this.querytag = querytag
   }
 

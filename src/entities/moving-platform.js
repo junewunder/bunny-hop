@@ -36,6 +36,7 @@ export default class MovingPlatform extends Entity {
 
       amount -= sign
       this.x += sign
+      this.collider.check(new Vec(0, -2), 'player')?.map?.(other => other.entity.moveX(sign))
     }
   }
 
@@ -56,6 +57,7 @@ export default class MovingPlatform extends Entity {
 
       amount -= sign
       this.y += sign
+      this.collider.check(new Vec(0, -2), 'player')?.map?.(other => other.entity.moveY(sign))
     }
   }
 }

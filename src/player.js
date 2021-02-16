@@ -40,24 +40,26 @@ export default class Player extends Entity {
   }
 
   update() {
-
     if (this.respawning) {
+      if (!this.sprite.playing) {
+        this.sprite.play()
+      }
       this.sprite.x = this.x * this.world.scale
       this.sprite.y = this.y * this.world.scale
       return
     }
 
-    const { sign, max, min } = Math
-    let movingSolid = this.collider.check(new Vec(0, 1), 'movingsolid')
-    if (movingSolid) {
-      const otherVx = movingSolid.entity.vx
-      if (sign(otherVx) === sign(this.vx) || this.vx === 0) {
-        this.vx = sign(otherVx) > 0
-          ? max(this.vx, otherVx)
-          : min(this.vx, otherVx)
-        console.log(this.vx);
-      }
-    }
+    // const { sign, max, min } = Math
+    // let movingSolid = this.collider.check(new Vec(0, 1), 'movingsolid')
+    // if (movingSolid) {
+    //   const otherVx = movingSolid.entity.vx
+    //   if (sign(otherVx) === sign(this.vx) || this.vx === 0) {
+    //     this.vx = sign(otherVx) > 0
+    //       ? max(this.vx, otherVx)
+    //       : min(this.vx, otherVx)
+    //     console.log(this.vx);
+    //   }
+    // }
     
     super.update()
 
@@ -93,6 +95,14 @@ export default class Player extends Entity {
     if (Math.abs(this.vx) > 1 && !this.sprite.playing) {
       this.sprite.play?.()
     }
+  }
+
+  respawn() {
+    this.respawning = true
+    this.swapTexture('bunnyrespawn', 8, {onLoop: () => {
+      this.respawning = false
+      this.swapTexture('bunnysprite', 8)
+    }})
   }
 
   onKeyDown(e) {

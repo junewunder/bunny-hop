@@ -12,7 +12,8 @@ export default class CoinBig extends Entity {
       spriteName: 'coinbig',
       frames: 28
     })
-    this.onCollide = this.onCollidedWith = () => {
+    this.onCollide = other => {
+      if (!other.tags?.includes('player')) return
       this.collected = true
       onCollide?.()
     }

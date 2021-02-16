@@ -15,7 +15,6 @@ export default class Entity {
   world
   collider
   onCollide(){}
-  onCollidedWith(){}
 
   maxVelocityX = 5
   limitVelocity = true
@@ -40,7 +39,7 @@ export default class Entity {
   }
 
   update() {
-    const { sign, min, max, abs } = Math
+    const { sign, min, abs } = Math
     const vxSign = sign(this.vx)
     if (this.limitVelocity) {
       this.vx = vxSign * min(abs(this.vx), this.maxVelocityX)
@@ -48,8 +47,6 @@ export default class Entity {
 
     this.moveX(this.vx)
     this.moveY(this.vy)
-    this.sprite.x = this.x * this.world.scale
-    this.sprite.y = this.y * this.world.scale
 
     // this.facing = (this.vx >= 1 || this.vx <= -1) ? vxSign : this.facing
     if (this.facing !== vxSign && vxSign !== 0 && !(this.vx < 1 && this.vx > -1) ) {
@@ -61,6 +58,11 @@ export default class Entity {
         this.sprite.anchor.x = 1
       }
     }
+  }
+
+  updateSprite() {
+    this.sprite.x = this.x * this.world.scale
+    this.sprite.y = this.y * this.world.scale
   }
 
   destroy() {
@@ -99,11 +101,11 @@ export default class Entity {
   get vel() { return new Vec(this.vx, this.vy) }
   set vel({x, y}) {this.vx = x; this.vy = y}
 
-  swapTexture(name, frames, {onLoop, onComplete}) {
+  swapTexture(name, frames, {onLoop, onComplete} = {}) {
     this.sprite.textures = makeTextures(name, frames)
     this.sprite.onLoop = onLoop
     this.sprite.onComplete = onComplete
-    this.sprite.animationSpeed = .3 + (Math.random() * .2) - .1
+    this.sprite.animationSpeed = .3
     this.sprite.play()
   }
 }

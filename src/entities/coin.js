@@ -13,7 +13,8 @@ export default class Coin extends Entity {
       spriteName: 'coin',
       frames: 18
     })
-    this.onCollide = this.onCollidedWith = () => {
+    this.onCollide = other => {
+      if (!other.tags?.includes('player')) return
       this.collected = true
       onCollide?.()
     }
@@ -25,6 +26,11 @@ export default class Coin extends Entity {
       this.collider.check(Vec.zero(), 'player')
     }
   }
+
+  // moveX(amount) {
+  //   console.log(amount)
+  //   super.moveX(amount)
+  // }
 
   destroy(afterAnim) {
     if (!this.collected) {

@@ -17,12 +17,6 @@ import Spike from './entities/spike'
 import PlatformBumper from './entities/platform-bumper'
 import MovingPlatform from './entities/moving-platform'
 
-// entities
-console.log(map.levels[0].layerInstances[0].entityInstances)
-// tiles
-console.log(map.levels[0].pxWid, ',', map.levels[0].pxHei)
-console.log(map.levels[0].layerInstances[1].gridTiles)
-
 export default class World {
   scale = 2 // 1 in game unit * scale = on screen pixels
   // scale = window.innerHeight / 23 * .95
@@ -48,16 +42,18 @@ export default class World {
     this.pixi.stage.addChild(this.stage)
 
     // TODO REMOVE BEFORE SHIPPING
-    // this.currentRoom = map.levels.length - 1
+    this.currentRoom = map.levels.length - 1
 
     this.room = new Room(this.stage, this, map.levels[this.currentRoom])
     this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances)
   }
 
   colliders(tag) {
-    return [this.player.collider, this.room.collider]
+    let allColliders = [this.player.collider, this.room.collider]
       .concat(Array.from(this.entities).map(x => x.collider))
-      .filter(x => x.tags?.includes?.(tag))
+    
+    if (!tag) return allColliders
+    else return allColliders.filter(x => x.tags?.includes?.(tag))
   }
 
   update() {
@@ -85,12 +81,18 @@ export default class World {
     if (player.y > 1000 || player.collider.check(Vec.zero(), 'death')) {
       this.resetPlayer()
     }
+
+    player.updateSprite()
+    for (let entity of this.entities) {
+      entity.updateSprite()
+    }
   }
 
-  resetPlayer(onLeft = true) {
-    // todo: start player on right if they're coming from the right
+  resetPlayer(shouldRespawn = true) {
     this.player.pos = this.playerStart
     this.player.vy = 0
+    this.player.vx = 0
+    if (shouldRespawn) this.player.respawn()
   }
 
   nextRoom() {
@@ -101,7 +103,7 @@ export default class World {
     this.room = new Room(this.stage, this, map.levels[this.currentRoom])
     this.entities = new Set()
     this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances)
-    this.resetPlayer(true)
+    this.resetPlayer(false)
   }
 
   prevRoom() {
@@ -113,7 +115,6 @@ export default class World {
     this.entities = new Set()
     this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances, { onLeft: false })
     this.resetPlayer(false)
-    this.player.vx = -1
   }
 
   createEntities(entities, { onLeft } = { onLeft: true }) {

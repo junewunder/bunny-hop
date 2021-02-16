@@ -13,8 +13,4 @@ export default class Spike extends Entity {
     this.sprite.animationSpeed = .03
     this.onCollide = onCollide
   }
-
-  onCollidedWith() {
-    this.onCollide()
-  }
 }
