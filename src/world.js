@@ -42,7 +42,7 @@ export default class World {
     this.pixi.stage.addChild(this.stage)
 
     // TODO REMOVE BEFORE SHIPPING
-    this.currentRoom = map.levels.length - 1
+    // this.currentRoom = map.levels.length - 1
 
     this.room = new Room(this.stage, this, map.levels[this.currentRoom])
     this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances)
