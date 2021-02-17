@@ -28,7 +28,8 @@ export default class World {
   room
 
   currentRoom = 0
-  maxRoom = 10
+  roomWidth
+  roomHeight
 
   framesSincePanY = 0
   framesBetweenPanY = 10
@@ -37,7 +38,9 @@ export default class World {
 
   constructor(pixi) {
     this.pixi = pixi
-    this.camera = new Camera({ticker: pixi.ticker})
+    // this.scale = pixi.screen.height / 23 * 16
+    // this.camera = new Camera({ticker: pixi.ticker})
+    // console.log(Object.keys(this.camera))
     this.stage = new PIXI.Container()
     this.pixi.stage.addChild(this.stage)
 
@@ -45,6 +48,8 @@ export default class World {
     // this.currentRoom = map.levels.length - 1
 
     this.room = new Room(this.stage, this, map.levels[this.currentRoom])
+    this.roomWidth = map.levels[this.currentRoom].pxWid
+    this.roomHeight = map.levels[this.currentRoom].pxHei
     this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances)
   }
 
@@ -57,28 +62,26 @@ export default class World {
   }
 
   update() {
-    const { player, pixi, stage, scale } = this
+    const { player, pixi, stage, scale, roomWidth, roomHeight } = this
+
+    const { min, max, sign, abs } = Math
 
     player.update()
     for (let entity of this.entities) {
       entity.update()
     }
 
-    // camera attempt
-    stage.x = Math.min(0, Math.max(-pixi.stage.width - 3 * 16 * scale + window.innerWidth,
-      -(player.x * scale - window.innerWidth / 2)
-    ))
-    
+    this.updateCamera()
 
     player.vy += .5
     if (player.onGround) {
-      player.vx -= Math.sign(player.vx)
+      player.vx -= sign(player.vx)
     } else {
-      player.vx -= Math.sign(player.vx) / 2
+      player.vx -= sign(player.vx) / 2
       // player.vy -= Math.sign(player.vy) // 60
     }
 
-    if (player.y > 1000 || player.collider.check(Vec.zero(), 'death')) {
+    if (player.y > this.roomHeight || player.collider.check(Vec.zero(), 'death')) {
       this.resetPlayer()
     }
 
@@ -96,14 +99,17 @@ export default class World {
   }
 
   nextRoom() {
-    if (this.currentRoom + 1 > this.maxRoom) { return }
+    if (this.currentRoom + 1 >= map.levels.length) { return }
     this.room.destroy()
     this.currentRoom++
     this.stage.removeChildren()
     this.room = new Room(this.stage, this, map.levels[this.currentRoom])
+    this.roomWidth = map.levels[this.currentRoom].pxWid
+    this.roomHeight = map.levels[this.currentRoom].pxHei
     this.entities = new Set()
     this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances)
     this.resetPlayer(false)
+    this.updateCamera(true)
   }
 
   prevRoom() {
@@ -112,9 +118,32 @@ export default class World {
     this.currentRoom--
     this.stage.removeChildren()
     this.room = new Room(this.stage, this, map.levels[this.currentRoom])
+    this.roomWidth = map.levels[this.currentRoom].pxWid
+    this.roomHeight = map.levels[this.currentRoom].pxHei
     this.entities = new Set()
     this.createEntities(map.levels[this.currentRoom].layerInstances[0].entityInstances, { onLeft: false })
     this.resetPlayer(false)
+    this.updateCamera(true)
+  }
+
+  updateCamera(force = false) {
+    const { player, pixi, stage, scale, roomWidth, roomHeight } = this
+    const { min, max, sign, abs } = Math
+
+    const targetX = min(0, max(-roomWidth * scale + pixi.screen.width,
+      -(player.x * scale - pixi.screen.width / 2)
+    ))
+    if (targetX !== stage.x || force) 
+      stage.x = targetX
+
+    const targetY = min(0, max(-(roomHeight) * scale + pixi.screen.height,
+      -(player.y * scale - pixi.screen.height / 2)
+    ))
+    // if ((targetY !== stage.y && abs(player.vy) > 2.5) || force) 
+    //   stage.y = targetY
+    // console.log(targetY - stage.y, (targetY - stage.y) / (player.vy || 1))
+    // stage.y += (targetY - stage.y) / (abs(player.vy) > 0 ? abs(player.vy) : .5)
+    stage.y = targetY // + 
   }
 
   createEntities(entities, { onLeft } = { onLeft: true }) {
@@ -148,7 +177,8 @@ export default class World {
         case 'Spike':
           this.entities.add(
             new Spike(this, new Vec(x, y), () => {
-              this.resetPlayer()
+              if (this.player.vy > 0)
+                this.resetPlayer()
             })
           )
           break;

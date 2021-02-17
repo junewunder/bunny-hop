@@ -35,6 +35,7 @@ app.loader
   .add('movingplatform', 'bunnyhop/movingplatform.json')
   
   .add('tut_congrats', 'bunnyhop/tut_congrats.png')
+  .add('tut_end', 'bunnyhop/tut_end.png')
   
   .load(onAssetsLoaded);
 
