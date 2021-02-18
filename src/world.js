@@ -70,16 +70,18 @@ export default class World {
     for (let entity of this.entities) {
       entity.update()
     }
+    
+    player.vy += .5 //gravity
+    
+    // air and ground friction
+    // if (player.onGround) {
+    //   player.vx -= sign(player.vx)
+    // } else {
+    //   player.vx -= sign(player.vx) / 2
+    //   // player.vy -= Math.sign(player.vy) // 60
+    // }
 
     this.updateCamera()
-
-    player.vy += .5
-    if (player.onGround) {
-      player.vx -= sign(player.vx)
-    } else {
-      player.vx -= sign(player.vx) / 2
-      // player.vy -= Math.sign(player.vy) // 60
-    }
 
     if (player.y > this.roomHeight || player.collider.check(Vec.zero(), 'death')) {
       this.resetPlayer()

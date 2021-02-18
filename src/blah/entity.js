@@ -17,7 +17,7 @@ export default class Entity {
   onCollide(){}
 
   maxVelocityX = 5
-  limitVelocity = true
+  limitVelocity = false
 
   constructor({world, spriteName, frames, pos = new Vec(0, 0), tags = []}) {
     this.world = world

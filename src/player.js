@@ -72,6 +72,17 @@ export default class Player extends Entity {
       if (onGround && this.framesOnGround > this.hopCooldown) this.vy -= 3
       this.vx += onGround ? -2 : -1
     }
+    
+    const { sign, min, abs } = Math
+    if (this.onGround) {
+      this.vx -= sign(this.vx)
+    } else {
+      this.vx -= sign(this.vx) / 2
+      // player.vy -= Math.sign(player.vy) // 60
+    }
+    this.vx = sign(this.vx) * min(abs(this.vx), this.maxVelocityX)
+
+    console.log(this.vx);
 
     // REGULAR JUMP
     if (holdingSpace && !jumpQueued) this.jumpQueued = true
@@ -82,16 +93,24 @@ export default class Player extends Entity {
       this.vy = j
     }
 
-    const jumpInputted = (holdingSpace || (jumpQueued && framesSinceJumpQueued < this.JUMP_QUEUE_LENGTH))
-    if (jumpInputted && (onGround && !this.alreadyJumped)) {
-      console.log('jump 1')
-      jump(-7)
+    // grounded jump
+    // const jumpInputted = (holdingSpace || (jumpQueued && framesSinceJumpQueued < this.JUMP_QUEUE_LENGTH))
+    const jumpInputted = (holdingSpace || (jumpQueued && this.framesOffGround < this.JUMP_QUEUE_LENGTH) && !this.alreadyJumped)
+    if (holdingSpace && onGround && !this.alreadyJumped) {
+      // console.log('jump 1', this.vy)
+      jump(-8)
     }
 
-    if ((holdingSpace && this.framesOffGround <= this.JUMP_FORGIVENESS)) {
-      console.log('jump 2')
-      jump(-7)
+    // extend jump by holding space
+    if (holdingSpace && !onGround && this.framesOffGround < 15 && this.alreadyJumped) {
+      // console.log('jump extend', this.vy)
+      jump(-6)
     }
+
+    // if ((holdingSpace && this.framesOffGround <= this.JUMP_FORGIVENESS)) {
+    //   console.log('jump 2')
+    //   // jump(-7)
+    // }
     if (jumpQueued) this.framesSinceJumpQueued++
     if (!holdingSpace) this.alreadyJumped = false
 
