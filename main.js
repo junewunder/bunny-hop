@@ -13,6 +13,7 @@ const app = new PIXI.Application({
   height: HEIGHT,
   width: WIDTH,
 });
+app.ticker.maxFPS = 60
 document.body.appendChild(app.view);
 
 const graphics = new PIXI.Graphics();
