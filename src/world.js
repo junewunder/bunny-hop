@@ -31,6 +31,7 @@ export default class World {
   roomWidth
   roomHeight
 
+  cameraTargetY = 0
   framesSincePanY = 0
   framesBetweenPanY = 10
 
@@ -56,7 +57,7 @@ export default class World {
   colliders(tag) {
     let allColliders = [this.player.collider, this.room.collider]
       .concat(Array.from(this.entities).map(x => x.collider))
-    
+
     if (!tag) return allColliders
     else return allColliders.filter(x => x.tags?.includes?.(tag))
   }
@@ -133,17 +134,26 @@ export default class World {
     const targetX = min(0, max(-roomWidth * scale + pixi.screen.width,
       -(player.x * scale - pixi.screen.width / 2)
     ))
-    if (targetX !== stage.x || force) 
+    if (targetX !== stage.x || force)
       stage.x = targetX
 
     const targetY = min(0, max(-(roomHeight) * scale + pixi.screen.height,
       -(player.y * scale - pixi.screen.height / 2)
     ))
-    // if ((targetY !== stage.y && abs(player.vy) > 2.5) || force) 
-    //   stage.y = targetY
-    // console.log(targetY - stage.y, (targetY - stage.y) / (player.vy || 1))
-    // stage.y += (targetY - stage.y) / (abs(player.vy) > 0 ? abs(player.vy) : .5)
-    stage.y = targetY // + 
+
+    if (player.onGround) {
+      this.cameraTargetY = targetY
+    }
+
+    if (this.cameraTargetY > stage.y) {
+      const difference = this.cameraTargetY - stage.y
+      const minStep = Math.min(difference, 10)
+      stage.y += Math.max(minStep, difference / 10)
+    }
+
+    if (targetY < stage.y) {
+      stage.y = targetY
+    }
   }
 
   createEntities(entities, { onLeft } = { onLeft: true }) {
@@ -159,7 +169,7 @@ export default class World {
           this.player.x = x
           this.player.y = y
           break;
-        
+
         case 'CoinBig':
           let coinbig = new CoinBig(this, new Vec(x, y), () => {
             coinbig.destroy(() => this.entities.delete(coinbig))
@@ -167,13 +177,13 @@ export default class World {
           this.entities.add(coinbig)
           break;
 
-        case 'Coin': 
+        case 'Coin':
           let coin = new Coin(this, new Vec(x, y), () => {
             coin.destroy(() => this.entities.delete(coin))
           })
           this.entities.add(coin)
           break;
-        
+
         case 'Spike':
           this.entities.add(
             new Spike(this, new Vec(x, y), () => {
@@ -188,7 +198,7 @@ export default class World {
             new PlatformBumper(this, new Vec(x, y))
           )
           break;
-        
+
         case 'MovingPlatform':
           this.entities.add(
             new MovingPlatform(this, new Vec(x, y), {vx: -1})
@@ -200,19 +210,19 @@ export default class World {
             new Sign(this, new Vec(x, y), 'exitLeft', [], 'player', () => this.prevRoom())
           )
           break;
-        
+
         case 'SignRight':
           this.entities.add(
             new Sign(this, new Vec(x, y), 'exitRight', [], 'player', () => this.nextRoom())
           )
           break;
-        
+
         case 'SignEmpty':
           this.entities.add(
             new Sign(this, new Vec(x, y), 'empty', [], 'player', () => null)
           )
           break;
-        
+
         case 'Tutorial':
           const sprite = new PIXI.Sprite(new PIXI.Texture.from(`tut_${entity.fieldInstances[0].__value}`))
           sprite.x = x * this.scale
